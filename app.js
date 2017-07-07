@@ -34,3 +34,63 @@ GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
 - Release 2
   AKAN DIBERITAHUKAN SETELAH LECTURE SIANG
 **/
+
+const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
+
+
+var app = express();
+var db = new sqlite3.Database('./db/contact_group.db')
+var bodyParser = require('body-parser')
+
+app.set('view engine', 'ejs');
+// parse application/x-www-form-urlencoded 
+app.use(bodyParser.urlencoded({ extended: false }))
+ 
+// parse application/json 
+app.use(bodyParser.json())
+
+
+
+app.get('/', function (req, res){
+  
+  res.render('index',{header : 'This is main page'});
+})
+
+app.get('/contacts', function(req, res){
+  db.all(`select * from Contacts`, function (err, data){
+    res.render('contacts',{header : 'This is contacts page', data : data})
+  })
+  
+})
+
+app.get('/input_data_contacts', function(req, res){
+  db.run(`insert into Contacts (id, name, company, telp_number, email) 
+        values ('1','rusli abdul gani','hacktiv8','0813777888','rusli.gani88@gmail.com')`);
+  res.send('input data berhasil');
+})
+
+app.post('/contacts', function(req, res){
+  db.run(`insert into Contacts (name, company, telp_number, email) 
+        values ('${req.body.name}','${req.body.company}','${req.body.telp_number}','${req.body.email}')`)
+  res.redirect('/contacts')
+})
+
+app.get('/contact/edit/:id', function(req, res){
+  db.all(`select * from 'Contacts' where 'id'='${req.params.id}' `, function(err, data){
+    res.render('edit_contact', {data : data})
+  });
+})
+
+app.get('/contact/delete/:id', function(req, res){
+  db.run(`delete from 'Contacts' where 'id'='${req.params.id}'`);
+  res.redirect(`/contacts`)
+})
+
+// app.post('/contact/edit/:id', function (req, res){
+//   db.run()
+// })
+
+
+
+app.listen(3000)
