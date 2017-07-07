@@ -1,0 +1,37 @@
+<html>
+<head>
+  <link rel="stylesheet" href="/style.css" ></link>
+</head>
+<body>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Company</th>
+      <th>Telephone Number</th>
+      <th>Email</th>
+      <th>Edit</th>
+      <th>Delete</th>
+    </tr>
+    <% datas.forEach(i => { %>
+    <tr>
+      <th><%= i.id %></th>
+      <th><%= i.name %></th>
+      <th><%= i.company %></th>
+      <th><%= i.telp_number %></th>
+      <th><%= i.email %></th>
+      <th><a href=/contacts/edit/<%= i.id %>>Edit</a></th>
+      <th><a href=/contacts/delete/<%= i.id %>>Delete</a></th>
+    </tr>
+    <% }) %>
+  </table>
+  <form action="/contacts" method="post">
+    <input type="text" name="name" placeholder="Input Your Name Here">
+    <input type="text" name="company" placeholder="Input Your Address Here">
+    <input type="text" name="telp_number" placeholder="Input Your Telephone Number Here">
+    <input type="text" name="email" placeholder="Input Your Email Here">
+    <input type="submit" value="Submit">
+  </form>
+  <h2><a href="/">Home</a></h2>
+</body>
+</html>

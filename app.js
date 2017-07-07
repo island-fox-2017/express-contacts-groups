@@ -1,36 +1,123 @@
-/**
-/** EXPRESS CONTACTS-GROUPS
----------------------------
-Buatlah sebuah aplikasi sederhana menggunakan Express JS dan SQLITE3 untuk
-menampilkan list Contact&Group, menambah data Contact&Group,
-melakukan edit data dan delete data berdasarkan data yang dipilih
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const sqlite3 = require('sqlite3');
 
-- Release 0
-1. Buatlah file dengan nama setup.js yang akan dijalankan pertama kali untuk membuat
-table pada database. Tentukan column mana saja yang akan di set unique.
-2. Berikan validasi di setiap create table sehingga meskipun setup dijalankan berulang
-kali, tidak error
+let myQuery = require('./myQuery.js');
 
-Structure table:
-* Contacts: id type integer, name type string, company type string, telp_number type string, email type string
-* Groups: id type integer, name_of_group type string
+let db = new sqlite3.Database('./db/data.db');
+let app = express();
 
-- Release 1 - Basic Routing for Contacts dan Groups
-Buatlah sejumlah route berikut dan tampilkan melalui view engine ejs
-----------------------------------------------------------------------
-METHOD | ROUTE                | KETERANGAN
-----------------------------------------------------------------------
-GET    | /contacts            | Menampilkan semua data contacts
-POST   | /contacts            | Menerima data form untuk input contact
-GET    | /contacts/edit/:id   | Menampilkan data contact spesifik untuk diubah
-POST   | /contacts/edit/:id   | Menerima data form untuk update contact
-GET    | /contacts/delete/:id | Menghapus data contact berdasarkan id
-GET    | /groups              | Menampilkan semua data groups
-POST   | /groups              | Menerima data form untuk input group
-GET    | /groups/edit/:id     | Menampilkan data group spesifik untuk diubah
-POST   | /groups/edit/:id     | Menerima data form untuk update group
-GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
+app.set('view engine', 'ejs');
 
-- Release 2
-  AKAN DIBERITAHUKAN SETELAH LECTURE SIANG
-**/
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+
+
+app.get('/', function (req, res) {
+  res.render('index');
+});
+
+app.get('/contacts', function (req, res) {
+  db.all(`
+    SELECT * FROM Contacts;
+    `, function(err, rows) {
+      if(!err) {
+        res.render('contacts', {datas: rows});
+      }
+    });
+});
+
+app.post('/contacts', function (req, res) {
+  let objStartup = {}
+  objStartup.name = req.body.name;
+  objStartup.company = req.body.company;
+  objStartup.telp_number = req.body.telp_number;
+  objStartup.email = req.body.email;
+
+  myQuery.insertData(objStartup);
+  //myQuery.showData();
+  res.redirect('/contacts')
+});
+
+app.get('/contacts/delete/:id', function(req, res) {
+  let deleteId = req.params.id;
+  myQuery.deleteData(deleteId);
+  res.redirect('/contacts');
+});
+
+app.get('/contacts/edit/:id', function (req, res) {
+  let editId = req.params.id;
+
+  db.all(`
+    SELECT * FROM Contacts WHERE id = ${editId};
+    `, function (err, rows) {
+      if (!err) {
+        res.render('edit', {data: rows});
+      }
+    });
+});
+
+app.post('/contacts/edit/:id', function (req, res) {
+  let objEdit = {};
+  objEdit.id = req.body.id;
+  objEdit.name = req.body.name;
+  objEdit.company = req.body.company;
+  objEdit.telp_number = req.body.telp_number;
+  objEdit.email = req.body.email;
+
+  myQuery.editData(objEdit);
+  res.redirect('/contacts');
+});
+
+
+// Groups
+
+app.get('/groups', function (req, res) {
+  db.all(`
+    SELECT * FROM Groups;
+    `, function(err, rows) {
+      if(!err) {
+        res.render('groups', {datas: rows});
+      }
+    });
+});
+
+app.post('/groups', function (req, res) {
+  let objStartup = {}
+  objStartup.name_of_group = req.body.name_of_group;
+
+  myQuery.insertData2(objStartup);
+  //myQuery.showData();
+  res.redirect('/groups')
+});
+
+app.get('/groups/delete/:id', function(req, res) {
+  let deleteId = req.params.id;
+  myQuery.deleteData2(deleteId);
+  res.redirect('/groups');
+});
+
+app.get('/groups/edit/:id', function (req, res) {
+  let editId = req.params.id;
+
+  db.all(`
+    SELECT * FROM Groups WHERE id = ${editId};
+    `, function (err, rows) {
+      if (!err) {
+        res.render('editGroups', {data: rows});
+      }
+    });
+});
+
+app.post('/groups/edit/:id', function (req, res) {
+  let objEdit = {};
+  objEdit.id = req.body.id;
+  objEdit.name_of_group = req.body.name_of_group;
+
+  myQuery.editData2(objEdit);
+  res.redirect('/groups');
+});
+
+app.listen(3001);
