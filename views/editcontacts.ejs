@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Edit Contacts <%= contact_id %></title>
+  </head>
+  <body>
+
+    <h2>Edit Contact with ID: <%= contact_id %></h2>
+
+    <form class="" action="/contacts/edit/<%= contact_id %>" method="post">
+      <input type="text" name="name" value="" placeholder="Nama">
+      <br>
+      <input type="text" name="company" value="" placeholder="Perusahaan">
+      <br>
+      <input type="text" name="telp_number" value="" placeholder="Nomor Telepon">
+      <br>
+      <input type="text" name="email" value="" placeholder="Email">
+      <br>
+      <button type="submit">Submit</button>
+    </form>
+
+  </body>
+</html>
