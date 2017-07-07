@@ -21,7 +21,7 @@ Buatlah sejumlah route berikut dan tampilkan melalui view engine ejs
 METHOD | ROUTE                | KETERANGAN
 ----------------------------------------------------------------------
 GET    | /contacts            | Menampilkan semua data contacts
-POST   | /contacts            | Menntuk input contact
+POST   | /contacts            | Menerima data form untuk input contact
 GET    | /contacts/edit/:id   | Menampilkan data contact spesifik untuk diubah
 POST   | /contacts/edit/:id   | Menerima data form untuk update contact
 GET    | /contacts/delete/:id | Menghapus data contact berdasarkan id
