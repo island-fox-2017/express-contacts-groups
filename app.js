@@ -34,3 +34,146 @@ GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
 - Release 2
   AKAN DIBERITAHUKAN SETELAH LECTURE SIANG
 **/
+
+
+'use strict'
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('./db/data.db');
+const express = require('express');
+// const path = require('path');
+const bodyParser = require('body-parser');
+
+let app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+
+app.set('view engine', 'ejs');
+
+app.get('/', function(req, res){
+  res.send('welcome')
+})
+
+
+
+//ROUTING TABLE Contacts
+app.get('/contacts', function(req, res){
+  db.all(`SELECT * FROM Contacts`, function(err, rows) {
+    if(!err) {
+      res.render('contacts', {data: rows});
+    }
+  })
+})
+
+app.post('/contacts', function(req, res){
+  let data = req.body;
+  insertDataContact(data);
+
+  res.redirect('/contacts');
+})
+
+app.get('/contacts/edit/:id', function(req, res, next){
+  db.all(`SELECT * FROM contacts WHERE id = '${req.params.id}'`, function(err, rows) {
+    if(!err) {
+      res.render('edit', {data: rows});
+    }
+  })
+})
+
+app.get('/contacts/delete/:id', function(req, res, next){
+    deleteDataContacs(req.params.id);
+    res.redirect('/contacts');
+})
+
+app.post('/contacts/update/:id', function(req, res, next){
+  let data = req.body;
+  updateDataContact(data, req.params.id);
+
+  res.redirect('/contacts');
+})
+
+
+//ROUTING TABLE Groups
+
+app.get('/groups', function(req, res){
+  db.all(`SELECT * FROM Groups`, function(err, rows) {
+    if(!err) {
+      res.render('groups', {data: rows});
+    }
+  })
+})
+
+app.get('/groups/delete/:id', function(req, res){
+  deleteDataGroups(req.params.id);
+  res.redirect('/groups')
+})
+
+app.get('/groups/edit/:id', function(req, res){
+  db.all(`SELECT * FROM Groups WHERE id = '${req.params.id}'`, function(err, rows){
+    if(!err){
+      res.render('editGroups', {data:rows});
+    }
+  })
+})
+
+
+app.post('/groups/update/:id', function(req, res){
+  let data = req.body;
+  updateDataGroups(data, req.params.id);
+
+  res.redirect('/groups')
+})
+
+app.post('/groups', function(req, res){
+  let data = req.body;
+  insertDataGrous(data);
+  res.redirect('/groups');
+})
+
+
+//port server
+app.listen(3000);
+
+
+
+
+
+
+
+
+
+//QUERY
+
+//CONTACTS TABLE QUERY
+function updateDataContact(obj, id){
+  db.run(`UPDATE Contacts SET
+    name = '${obj.name}',
+    company = '${obj.company}',
+    telp_number = '${obj.telp_number}',
+    email = '${obj.email}'
+    WHERE id = '${id}';`);
+}
+
+function insertDataContact(obj){
+  db.run(`INSERT INTO Contacts (name, company, telp_number, email)
+    VALUES ('${obj.name}', '${obj.company}', '${obj.telp_number}', '${obj.email}')`)
+}
+
+function deleteDataContacs(id){
+  db.run(`DELETE FROM Contacts WHERE id = ${id}`)
+}
+
+
+//GROUP TABLE QUERY
+function insertDataGrous(obj){
+  db.run(`INSERT INTO Groups (name_of_group)
+  VALUES ('${obj.name_of_group}')`)
+}
+
+function deleteDataGroups(id){
+  db.run(`DELETE FROM Groups WHERE id = ${id}`)
+}
+
+function updateDataGroups(obj, id){
+  db.run(`UPDATE Groups SET name_of_group = '${obj.name_of_group}' WHERE id = '${id}'`)
+}

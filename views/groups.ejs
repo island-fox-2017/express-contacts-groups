@@ -1,0 +1,22 @@
+<table border="1">
+  <tr>
+    <td>Id</td>
+    <td>Name Of Group</td>
+    <td>Action</td>
+  </td>
+  <% for(var i = 0; i < data.length; i++) { %>
+  <tr>
+    <td><%= data[i].id %></td>
+    <td><%= data[i].name_of_group %></td>
+    <td><a href="groups/edit/<%= data[i].id%>">Edit</a> || <a href="groups/delete/<%=data[i].id%>">Delete</a></td>
+  </tr>
+  <%  }  %>
+
+</table>
+
+<!-- * Groups: id type integer, name_of_group type string -->
+
+<form action="/groups" method="post">
+  <input type="text" name='name_of_group' placeholder="name_of_group">
+  <button type="submit">Submit</button>
+</form>

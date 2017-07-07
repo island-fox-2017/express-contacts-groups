@@ -1,0 +1,9 @@
+
+<form action="/contacts/update/<%= data[0].id %>" method="post">
+  <input type="text" name='id' value='<%= data[0].id %>' >
+  <input type="text" name='name' value='<%= data[0].name %>'>
+  <input type="text" name='company' value='<%= data[0].company %>'>
+  <input type="text" name='telp_number' value='<%= data[0].telp_number %>'>
+  <input type="text" name='email' value='<%= data[0].email %>'>
+  <button type="submit">Submit</button>
+</form>
