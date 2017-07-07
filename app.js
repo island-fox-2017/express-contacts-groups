@@ -1,3 +1,53 @@
+const express = require('express');
+const app = express();
+
+var sqlite = require('sqlite3').verbose();
+var db = new sqlite.Database('./db/contacts.db');
+
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+app.use(express.static('public'))
+
+app.set('view engine', 'ejs');
+
+app.get('/', function(req, res) {
+  res.render('index', {})
+})
+
+app.get('/contacts', function(req, res) {
+  db.all("SELECT * FROM contacts", function(err, rows) {
+    res.render('contacts', {data_contact: rows})
+  })  
+})
+
+app.post('/contacts', function(req, res) {
+  db.run(`INSERT INTO contacts (name, company, telp_number, email) VALUES ('${req.body.nama}', '${req.body.company}', '${req.body.phone}', '${req.body.email}')`)
+  res.redirect('/contacts')
+})
+
+app.get('/contacts/edit/:id', function(req, res) {
+  db.all(`SELECT * FROM contacts WHERE id = ${req.params.id}`, function(err, rows) {
+    res.render('contact_edit', {data_contact: rows})
+  })
+})
+
+app.post('/contacts/edit/:id', function(req, res) {
+  db.run(`UPDATE contacts SET name = '${req.body.nama}', company = '${req.body.company}', telp_number = '${req.body.phone}', email = '${req.body.email}' WHERE id = '${req.params.id}'`)
+  res.redirect('/contacts')
+})
+
+app.get('/contacts/delete/:id', function(req, res) {
+  db.run(`DELETE FROM contacts WHERE id = '${req.params.id}'`)
+  res.redirect('/contacts')
+})
+
+app.get('/groups', function(req,res) {
+  res.render('groups', {})
+})
+
+app.listen(3000)
 /**
 /** EXPRESS CONTACTS-GROUPS
 ---------------------------
