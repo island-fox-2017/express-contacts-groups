@@ -1,36 +1,146 @@
-/**
-/** EXPRESS CONTACTS-GROUPS
----------------------------
-Buatlah sebuah aplikasi sederhana menggunakan Express JS dan SQLITE3 untuk
-menampilkan list Contact&Group, menambah data Contact&Group,
-melakukan edit data dan delete data berdasarkan data yang dipilih
+var express = require('express');
+var path = require('path');
+var sqlite3 = require('sqlite3')
+  .verbose();
+var bodyParser = require('body-parser')
+// var setup = require('./setup.js')
 
-- Release 0
-1. Buatlah file dengan nama setup.js yang akan dijalankan pertama kali untuk membuat
-table pada database. Tentukan column mana saja yang akan di set unique.
-2. Berikan validasi di setiap create table sehingga meskipun setup dijalankan berulang
-kali, tidak error
 
-Structure table:
-* Contacts: id type integer, name type string, company type string, telp_number type string, email type string
-* Groups: id type integer, name_of_group type string
+var db = new sqlite3.Database('./db/data.db');
+var app = express();
 
-- Release 1 - Basic Routing for Contacts dan Groups
-Buatlah sejumlah route berikut dan tampilkan melalui view engine ejs
-----------------------------------------------------------------------
-METHOD | ROUTE                | KETERANGAN
-----------------------------------------------------------------------
-GET    | /contacts            | Menampilkan semua data contacts
-POST   | /contacts            | Menerima data form untuk input contact
-GET    | /contacts/edit/:id   | Menampilkan data contact spesifik untuk diubah
-POST   | /contacts/edit/:id   | Menerima data form untuk update contact
-GET    | /contacts/delete/:id | Menghapus data contact berdasarkan id
-GET    | /groups              | Menampilkan semua data groups
-POST   | /groups              | Menerima data form untuk input group
-GET    | /groups/edit/:id     | Menampilkan data group spesifik untuk diubah
-POST   | /groups/edit/:id     | Menerima data form untuk update group
-GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
+app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
 
-- Release 2
-  AKAN DIBERITAHUKAN SETELAH LECTURE SIANG
-**/
+//
+// function insertData(param) {
+//   //INSERT INTO NAMA_TABLE (nama_column1, column2) VALUES(value1, value2)
+//   db.run(`INSERT INTO contacts (name, company, telp_number, email)
+//   VALUES (${param.nama}, ${param.corp}, ${param.phone}, ${param.email});`)
+//   console.log('Data created');
+// }
+// //
+// // function updateData() {
+// //   //UPDATE NAMA_TABLE SET column_yangingindiubah WHERE condition
+// //   UPDATE Students SET lastName = 'End', email =  WHERE id = 3;
+// // }
+// //
+// // function deleteData() {
+// //   //DELETE FROM NAMA_TABLE WHERE condition
+// //   DELETE FROM Students WHERE id = 3;
+// // }
+// //
+// // function showData() {
+// //   db.all(`SELECT firstName FROM Students`, function (err, rows) {
+// //     if (!err) {
+// //       rows.forEach(row => {
+// //         console.log(`${row.firstName} ${row.email}`);
+// //       })
+// //     }
+//   })
+
+
+app.get('/', function (req, res) {
+  res.render('index', {
+    title: 'WELCOME'
+  })
+})
+
+//EDIT PAGE
+app.get('/contacts/edit/:id', function (req, res) {
+  db.all(`select * from contacts where id = ${req.params.id}`, function (err, rows) {
+    if (!err) {
+      res.render('edit', {
+        cont: rows
+      })
+    }
+  })
+})
+
+// EDIT
+app.post('/contacts/edit/:id', function (req, res) {
+  // console.log(req.body);
+  db.run(`UPDATE contacts SET name = '${req.body.nama}', company = '${req.body.corp}', telp_number = '${req.body.phone}', email = '${req.body.email}'  WHERE id = ${req.params.id};`)
+  res.redirect('/contacts')
+})
+
+//DELETE
+app.get('/contacts/delete/:id', function (req, res) {
+  // console.log(req.body);
+  db.run(`DELETE FROM contacts WHERE id = ${req.params.id};`)
+  res.redirect('/contacts')
+})
+
+// LIST
+app.get('/contacts', function (req, res) {
+  db.all(`SELECT * FROM contacts`, function (err, rows) {
+    if (!err) {
+      res.render('contacts', {
+        dataContact: rows
+      })
+    }
+  })
+})
+
+// ADD
+app.post('/contacts', function (req, res) {
+  // console.log(req.body);
+  db.run(`INSERT INTO contacts (name, company, telp_number, email)
+    VALUES ('${req.body.nama}', '${req.body.corp}', '${req.body.phone}', '${req.body.email}');`)
+  console.log('Data created');
+  res.redirect('/contacts')
+})
+
+
+//groups
+
+
+app.get('/groups', function (req, res) {
+  db.all(`SELECT * FROM groups`, function (err, rows) {
+    if (!err) {
+      res.render('groups', {
+        dataGroup: rows
+      })
+    }
+  })
+})
+
+app.post('/groups', function (req, res) {
+  // console.log(req.body);
+  db.run(`INSERT INTO groups (name_of_group)
+    VALUES ('${req.body.grup}');`)
+  console.log('Data created');
+  res.redirect('/groups')
+})
+
+//EDIT PAGE
+app.get('/groups/editG/:id', function (req, res) {
+  db.all(`select * from groups where id = ${req.params.id}`, function (err, rows) {
+    if (!err) {
+      res.render('editG', {
+        cont: rows
+      })
+    }
+  })
+})
+
+// EDIT
+app.post('/groups/editG/:id', function (req, res) {
+  // console.log(req.body);
+  db.run(`UPDATE groups SET name_of_group = '${req.body.grup}'  WHERE id = ${req.params.id};`)
+  res.redirect('/groups')
+})
+
+//DELETE
+app.get('/groups/delete/:id', function (req, res) {
+  // console.log(req.body);
+  db.run(`DELETE FROM groups WHERE id = ${req.params.id};`)
+  res.redirect('/groups')
+})
+
+
+app.listen(3000);
