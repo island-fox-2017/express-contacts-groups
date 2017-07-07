@@ -28,8 +28,11 @@ app.get('/contacts', function(req, res) {
 });
 
 app.get('/contacts/edit/:id', function(req, res) {
-  res.render('editcontacts', {contact_id: req.params.id});
-})
+  db.all(`SELECT * FROM contacts WHERE id = ${req.params.id};`, function(err, rows) {
+    if (!err) res.render('editcontacts', {data: rows});
+    else console.log(err);
+  })
+});
 
 app.get('/contacts/delete/:id', function(req, res) {
   db.run(`DELETE FROM contacts WHERE id = ${req.params.id};`, function(err, rows) {
@@ -46,8 +49,11 @@ app.get('/groups', function(req,res) {
 });
 
 app.get('/groups/edit/:id', function(req, res) {
-  res.render('editgroups', {group_id: req.params.id});
-})
+  db.all(`SELECT * FROM groups WHERE id = ${req.params.id};`, function(err, rows) {
+    if (!err) res.render('editgroups', {data: rows});
+    else console.log(err);
+  })
+});
 
 app.get('/groups/delete/:id', function(req, res) {
   db.run(`DELETE FROM groups WHERE id = ${req.params.id};`, function(err, rows) {

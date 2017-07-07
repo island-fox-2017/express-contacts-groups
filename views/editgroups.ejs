@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Edit Groups <%= group_id %></title>
+    <title>Edit Groups <%= data[0].id %></title>
   </head>
   <body>
 
-    <h2>Edit Groups with ID: <%= group_id %></h2>
+    <h2>Edit Groups with ID: <%= data[0].id %></h2>
 
-    <form class="" action="/groups/edit/<%= group_id %>" method="post">
-      <input type="text" name="name_of_group" value="" placeholder="Nama grup">
+    <form class="" action="/groups/edit/<%= data[0].id %>" method="post">
+      <input type="text" name="name_of_group" value="<%= data[0].name_of_group %>">
       <br>
       <button type="submit">Submit</button>
     </form>
