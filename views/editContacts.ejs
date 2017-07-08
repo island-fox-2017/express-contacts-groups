@@ -5,35 +5,20 @@
     <title></title>
   </head>
   <body>
-    <form action="/contacts/edit/<%=data_contact[0].id%>" method="post">
+    <p>Update Contact</p>
+    <% dataContact.forEach(contact => { %>
+      
+    <form action="/contacts/edit/<%=contact.id%>" method="post">
       <br><br>
       
-      Name : <input type="text" name="saveName" value="<%= data_contact[0].name%>">
-      Company : <input type="text" name="saveCompany" value="<%= data_contact[0].company%>">
-      Phone Number : <input type="text" name="savePhone" value="<%= data_contact[0].telp_number%>">
-      Email : <input type="text" name="saveEmail" value="<%=data_contact[0].email%>">
+      Name : <input type="text" name="saveName" value="<%= contact.name%>">
+      Company : <input type="text" name="saveCompany" value="<%= contact.company%>">
+      Phone Number : <input type="text" name="savePhone" value="<%= contact.telp_number%>">
+      Email : <input type="text" name="saveEmail" value="<%= contact.email%>">
       <button type="submit" name="">Update</button>
     </form>
+    <% })%>
     
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Company</th>
-          <th>Phone Number</th>
-          <th>E-Mail</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><%= data_contact.id%></td>
-          <td><%= data_contact.name%></td>
-          <td><%= data_contact.company%></td>
-          <td><%= data_contact.telp_number%></td>
-          <td><%= data_contact.email%></td>
-        </tr>
-      </tbody>
-    </table>
+
   </body>
 </html>
