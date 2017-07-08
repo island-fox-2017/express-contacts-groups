@@ -3,7 +3,7 @@ const app = express();
 const sqlite = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 const path = require('path');
-var library = require('./library')
+var library = require('./library')//Lib of functions
 
 var db = new sqlite.Database('./db/data.db');
 
@@ -15,7 +15,7 @@ app.set('view engine', 'ejs');
 
 //HOMEPAGE
 app.get('/', (req, res) => {
-   res.render('index'); 
+   res.render('index');
 });
 
 //CONTACTS PAGE
@@ -28,7 +28,7 @@ app.get('/contacts', (req, res) => {
 
 app.post('/contacts', (req, res) => {
     library.insertContacts(req.body);
-         
+
     res.redirect('/contacts');
     });
 
@@ -36,20 +36,20 @@ app.post('/contacts', (req, res) => {
 app.get('/contacts/edit/:id', (req, res) => {
     //RUN QUERY
     db.all(`SELECT * FROM Contacts WHERE id = '${req.params.id}';`, (err, data) => {
-       res.render('edit_contacts', {data_contacts : data}); 
+       res.render('edit_contacts', {data_contacts : data});
     });
 });
 
 app.post('/contacts/edit/:id', (req, res) => {
     library.editContacts(req.body);
-    
+
     res.redirect('/contacts');
 });
 
 //DELETE CONTACTS
 app.get('/contacts/delete/:id', (req, res) => {
     library.removeContacts(req.params.id);
-    
+
     res.redirect('/contacts');
 })
 
@@ -65,7 +65,7 @@ app.get('/groups', (req, res) => {
 
 app.post('/groups', (req, res) => {
     library.insertGroups(req.body);
-         
+
     res.redirect('/groups');
     });
 
@@ -73,20 +73,20 @@ app.post('/groups', (req, res) => {
 app.get('/groups/edit/:id', (req, res) => {
     //RUN QUERY
     db.all(`SELECT * FROM Groups WHERE id = '${req.params.id}';`, (err, data) => {
-       res.render('edit_groups', {data_groups : data}); 
+       res.render('edit_groups', {data_groups : data});
     });
 });
 
 app.post('/groups/edit/:id', (req, res) => {
     library.editGroups(req.body);
-    
+
     res.redirect('/groups');
 });
 
 //DELETE GROUPS
 app.get('/groups/delete/:id', (req, res) => {
     library.removeGroups(req.params.id);
-    
+
     res.redirect('/groups');
 });
 
