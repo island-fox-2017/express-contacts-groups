@@ -1,3 +1,113 @@
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('db/data.db');
+
+let app = express();
+
+app.set('view engine', 'ejs');
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}))
+
+app.get('/', function (req, res) {
+  res.render('index')
+})
+
+app.get('/contacts', function (req, res) {
+  db.all(`SELECT * FROM contacts`, function(err, rows) {
+    if(!err) {
+        res.render('contacts', {data: rows})
+    }
+  })
+})
+
+app.post('/contacts', function(req, res) {
+  let name = req.body.name;
+  let company = req.body.company;
+  let telp_number = req.body.telp_number;
+  let email = req.body.email;
+
+  db.run(`INSERT INTO contacts (name, company, telp_number, email)
+  VALUES ('${name}', '${company}', '${telp_number}', '${email}');`)
+  console.log('Data created');
+
+  res.redirect('/contacts')
+});
+
+app.get('/contacts/edit/:id', function(req, res) {
+  db.all(`SELECT * FROM contacts WHERE id = '${req.params.id}'`, function(error, rows) {
+    if (!error) {
+      res.render('edit', {data: rows})
+    }
+  })
+})
+
+app.post('/contacts/update/:id', function(req, res) {
+  let id = req.params.id;
+  let name = req.body.name;
+  let company = req.body.company;
+  let telp_number = req.body.telp_number;
+  let email = req.body.email;
+
+  db.run(`UPDATE contacts set name = '${name}', company = '${company}', telp_number = '${telp_number}', email = '${email}' WHERE id = ${id};`);
+  console.log('Data updated');
+  res.redirect('/contacts')
+})
+
+app.get('/contacts/delete/:id', function(req, res, next){
+  let id = req.params.id
+  db.run(`DELETE FROM Contacts WHERE id = ${id};`)
+  res.redirect('/contacts');
+})
+
+//===================================GROUPS==================================================================//
+
+app.get('/groups', function (req, res) {
+  db.all(`SELECT * FROM groups`, function(err, rows) {
+    if(!err) {
+        res.render('groups', {data: rows})
+    }
+  })
+})
+
+app.post('/groups', function(req, res) {
+  let name_group = req.body.name_group;
+
+  db.run(`INSERT INTO groups (name_group) VALUES ('${name_group}');`)
+  console.log('Data created');
+
+  res.redirect('/groups')
+});
+
+app.get('/groups/edit/:id', function(req, res) {
+  db.all(`SELECT * FROM groups WHERE id = '${req.params.id}'`, function(error, rows) {
+    if (!error) {
+      res.render('group-edit', {data: rows})
+    }
+  })
+})
+
+app.post('/groups/update/:id', function(req, res) {
+  let id = req.params.id;
+  let name_group = req.body.name_group;
+
+  db.run(`UPDATE groups set name_group = '${name_group}' WHERE id = ${id};`);
+  console.log('Data updated');
+  res.redirect('/groups')
+})
+
+app.get('/groups/delete/:id', function(req, res, next){
+  let id = req.params.id
+  db.run(`DELETE FROM groups WHERE id = ${id};`)
+  res.redirect('/groups');
+})
+
+app.listen(3000);
+
 /**
 /** EXPRESS CONTACTS-GROUPS
 ---------------------------
