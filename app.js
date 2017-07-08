@@ -1,36 +1,74 @@
-/**
-/** EXPRESS CONTACTS-GROUPS
----------------------------
-Buatlah sebuah aplikasi sederhana menggunakan Express JS dan SQLITE3 untuk
-menampilkan list Contact&Group, menambah data Contact&Group,
-melakukan edit data dan delete data berdasarkan data yang dipilih
+const express = require('express')
+const app = express()
+const bodyParser = require ('body-parser')
+const ejs = require('ejs')
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database('./db/data.db');
 
-- Release 0
-1. Buatlah file dengan nama setup.js yang akan dijalankan pertama kali untuk membuat
-table pada database. Tentukan column mana saja yang akan di set unique.
-2. Berikan validasi di setiap create table sehingga meskipun setup dijalankan berulang
-kali, tidak error
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended : true}))
 
-Structure table:
-* Contacts: id type integer, name type string, company type string, telp_number type string, email type string
-* Groups: id type integer, name_of_group type string
+app.set('view engine', 'ejs')
 
-- Release 1 - Basic Routing for Contacts dan Groups
-Buatlah sejumlah route berikut dan tampilkan melalui view engine ejs
-----------------------------------------------------------------------
-METHOD | ROUTE                | KETERANGAN
-----------------------------------------------------------------------
-GET    | /contacts            | Menampilkan semua data contacts
-POST   | /contacts            | Menerima data form untuk input contact
-GET    | /contacts/edit/:id   | Menampilkan data contact spesifik untuk diubah
-POST   | /contacts/edit/:id   | Menerima data form untuk update contact
-GET    | /contacts/delete/:id | Menghapus data contact berdasarkan id
-GET    | /groups              | Menampilkan semua data groups
-POST   | /groups              | Menerima data form untuk input group
-GET    | /groups/edit/:id     | Menampilkan data group spesifik untuk diubah
-POST   | /groups/edit/:id     | Menerima data form untuk update group
-GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
+app.get('/',function(req,res) {
+   res.render('index',{titleTask : 'Contact&Group'})
+})
 
-- Release 2
-  AKAN DIBERITAHUKAN SETELAH LECTURE SIANG
-**/
+app.get('/contacts', function(req,res){
+  db.all(`SELECT * FROM Contact`, function(err, rows){
+    res.render('contact',{contactsInput : rows })
+  })
+})
+app.post('/contacts',function(req, res){
+  db.run(`INSERT INTO Contact (name,company,telp_number,email)
+          VALUES ('${req.body.name}','${req.body.company}','${req.body.phone}','${req.body.email}')`)
+  res.redirect('/contacts')
+})
+
+app.get('/contacts/delete/:id',function(req ,res) {
+  db.run(`DELETE FROM Contact WHERE id = ${req.params.id}`)
+  res.redirect('/contacts');
+})
+app.get(`/contacts/edit/:id`,function (req,res) {
+db.all(`SELECT *  FROM Contact WHERE rowid = ${req.params.id} `, function(err, rows){
+      res.render('edit',{editInput : rows })
+  })
+})
+
+app.post('/contacts/edit/:id',function (req,res) {
+  db.run(`UPDATE Contact SET
+    name = '${req.body.name}',
+    company = '${req.body.company}',
+    telp_number = '${req.body.phone}',
+    email = '${req.body.email}'
+    WHERE id = '${req.body.id}'`)
+  res.redirect('/contacts')
+})
+
+app.get('/groups',function (req,res) {
+  db.all(`SELECT * FROM Groups`, function(err, rows){
+    res.render('groups',{groupInput : rows })
+  })
+})
+app.post('/groups',function (req,res) {
+  db.run(`INSERT INTO Groups (name_of_group)
+  VALUES ('${req.body.groupName}')`)
+  res.redirect("/groups")
+})
+
+app.get('/groups/delete/:id',function (req,res) {
+  db.run(`DELETE FROM Groups WHERE id =${req.params.id}`)
+  res.redirect('/groups')
+})
+
+app.get('/groups/edit/:id',function (req,res) {
+  db.all(`SELECT * FROM Groups WHERE rowid = ${req.params.id} `, function(err, rows){
+    res.render('editGroups',{editGroups: rows })
+  })
+})
+app.post('/groups/edit/:id',function (req,res) {
+  db.run(`UPDATE  Groups SET name_of_group = '${req.body.name}'  WHERE id = '${req.body.id}'`)
+  res.redirect('/groups')
+})
+
+app.listen(3000)
