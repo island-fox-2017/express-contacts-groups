@@ -1,36 +1,129 @@
-/**
-/** EXPRESS CONTACTS-GROUPS
----------------------------
-Buatlah sebuah aplikasi sederhana menggunakan Express JS dan SQLITE3 untuk
-menampilkan list Contact&Group, menambah data Contact&Group,
-melakukan edit data dan delete data berdasarkan data yang dipilih
+//ini adalah cara require express nya
+var express = require('express')
+//butuh SQLITE3
+const sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database('./db/data.db')
+//biar bisa akses folder project
+var path = require('path');
+//pakai body parser
+const bodyParser = require('body-parser');
 
-- Release 0
-1. Buatlah file dengan nama setup.js yang akan dijalankan pertama kali untuk membuat
-table pada database. Tentukan column mana saja yang akan di set unique.
-2. Berikan validasi di setiap create table sehingga meskipun setup dijalankan berulang
-kali, tidak error
 
-Structure table:
-* Contacts: id type integer, name type string, company type string, telp_number type string, email type string
-* Groups: id type integer, name_of_group type string
+//ini cara intiate-nya
+var app = express()
 
-- Release 1 - Basic Routing for Contacts dan Groups
-Buatlah sejumlah route berikut dan tampilkan melalui view engine ejs
-----------------------------------------------------------------------
-METHOD | ROUTE                | KETERANGAN
-----------------------------------------------------------------------
-GET    | /contacts            | Menampilkan semua data contacts
-POST   | /contacts            | Menerima data form untuk input contact
-GET    | /contacts/edit/:id   | Menampilkan data contact spesifik untuk diubah
-POST   | /contacts/edit/:id   | Menerima data form untuk update contact
-GET    | /contacts/delete/:id | Menghapus data contact berdasarkan id
-GET    | /groups              | Menampilkan semua data groups
-POST   | /groups              | Menerima data form untuk input group
-GET    | /groups/edit/:id     | Menampilkan data group spesifik untuk diubah
-POST   | /groups/edit/:id     | Menerima data form untuk update group
-GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
+app.use(bodyParser.urlencoded({ extended: false }))
 
-- Release 2
-  AKAN DIBERITAHUKAN SETELAH LECTURE SIANG
-**/
+// parse application/json
+app.use(bodyParser.json())
+//ini untuk setup view engine
+app.set('view engine', 'ejs');
+
+//panggil data
+
+//ini untuk setup public folder
+var path_name = path.join(__dirname, 'public')
+var express_static = express.static(path_name)
+app.use(express_static);
+
+
+app.get('/', function(req, res){
+  res.render('index')
+  // res.send('Achim Baggins')
+})
+
+//createTable
+app.get('/create-table/contact', function (req, res) {
+  db.run('CREATE TABLE if not exists CONTACT2017 (id INTEGER PRIMARY KEY AUTOINCREMENT, name text, company text, phone INTEGER, email text)');
+  res.send('contact table created')
+})
+app.get('/create-table/group', function (req, res) {
+  db.run('CREATE TABLE if not exists GROUPS (id INTEGER PRIMARY KEY AUTOINCREMENT, group_name text)');
+  res.send('group table created')
+})
+
+
+//insert dummy record
+app.get('/insert/data/contact', function(req, res){
+  db.run("INSERT INTO CONTACT2017 (name, company, phone, email) VALUES ('Achim Baggins', 'Hacktiv8 Indonesia', 081803704343, 'achim_baggins@yahoo.com')");  // res.send('Achim Baggins')
+  res.redirect('/contacts')
+})
+app.get('/insert/data/group', function(req, res){
+  db.run("INSERT INTO groups (group_name) VALUES ('Family')");  // res.send('Achim Baggins')
+  res.redirect('/groups')
+})
+
+
+
+//contacts routing
+app.get('/contacts', function(req, res){
+  db.all("select * FROM CONTACT2017",function (err, data) {
+    res.render('contacts',{contacts_list: data})
+    // console.log(data.length);
+  });
+})
+
+app.get('/contacts/add', function(req, res){
+  res.render('contacts_add')//,{contacts_list: data})
+})
+
+app.post('/contacts/add', function (req, res) {
+  // console.log('ok post aktif');
+
+  db.run(`INSERT INTO CONTACT2017 (name, company, phone, email) VALUES ('${req.body.fullname}', '${req.body.company}', '${req.body.phone}', '${req.body.email}')`);  // res.send('Achim Baggins')
+  res.redirect('/contacts')
+})
+
+app.get('/contacts/edit/:id', function(req, res){
+  // console.log(req.params.id);
+  db.all(`select * FROM CONTACT2017 where id=${req.params.id}`,function (err, data) {
+    res.render('contacts_edit',{contacts_list: data})
+  });
+})
+
+app.post('/contacts/edit/:id', function (req, res) {
+  db.run(`UPDATE CONTACT2017 SET name='${req.body.name}', company='${req.body.company}', phone='${req.body.phone}', email='${req.body.email}' WHERE id='${req.params.id}'`)
+  res.redirect('/contacts')
+})
+
+app.get('/contacts/delete/:id', function (req, res) {
+  // console.log(req.params.id);
+  db.run(`delete from CONTACT2017 where id=${req.params.id};`);
+  res.redirect('/contacts')
+  // res.send(`ok berhasil hapus ${req.params.id}`)
+})
+
+//groups routing
+app.get('/groups', function(req, res){
+  db.all("select * FROM GROUPS",function (err, data) {
+    res.render('groups',{groups_list: data})
+    // console.log(data.length);
+  });
+})
+
+app.post('/groups', function (req, res) {
+  // console.log('ok post aktif');
+  db.run(`INSERT INTO GROUPS (group_name) VALUES ('${req.body.group_name}')`);  // res.send('Achim Baggins')
+  res.redirect('/groups')
+})
+
+app.get('/groups/edit/:id', function(req, res){
+  // console.log(req.params.id);
+  db.all(`select * FROM GROUPS where id=${req.params.id}`,function (err, data) {
+    res.render('groups_edit',{groups_list: data})
+  });
+})
+
+app.post('/groups/edit/:id', function (req, res) {
+  db.run(`UPDATE GROUPS SET group_name='${req.body.group_name}' WHERE id='${req.params.id}'`)
+  res.redirect('/groups')
+})
+
+app.get('/groups/delete/:id', function (req, res) {
+  // console.log(req.params.id);
+  db.run(`delete from GROUPS where id=${req.params.id};`);
+  res.redirect('/groups')
+  // res.send(`ok berhasil hapus ${req.params.id}`)
+})
+
+app.listen(3000)
