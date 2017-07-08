@@ -1,3 +1,86 @@
+'use strict'
+
+const express = require('express');
+const app = express();
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database("./db/data.db")
+var bodyParser = require('body-parser');
+// let hapus = require('./setup.js');
+
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+app.set( "view engine", 'ejs')
+
+app.get('/',function(req,res){
+  res.render('main',{ })
+})
+
+//******************Contact************************************************************************
+
+
+app.get('/contact',function(req,res){
+  db.all("SELECT * FROM Contacts",function(err, rows){
+  res.render("contact",{pesan : rows})})
+})
+
+app.post('/contact',function(req,res){
+  db.run(`INSERT INTO Contacts(nama,company,telp_number,email)VALUES
+  ('${req.body.Name}','${req.body.Company}','${req.body.Telp_number}','${req.body.Email}')`)
+  res.redirect('/contact')
+})
+
+app.get('/contact/edit/:id',function(req,res){
+  db.all(`SELECT * FROM Contacts WHERE id = ${req.params.id}`,function(err,rows){
+  res.render("edit",{data : rows})
+  })
+})
+
+app.post('/contact/edit/:id',function(req,res){
+  db.run(`UPDATE Contacts SET nama = '${req.body.Name}', company = '${req.body.Company}',
+   telp_number = '${req.body.Telp_number}', email = '${req.body.Email}' WHERE id = ${req.params.id}`)
+  res.redirect('/contact')
+})
+
+app.get('/contact/delete/:id',function(req,res){
+  db.run(`DELETE FROM Contacts WHERE id = ${req.params.id}`)
+  res.redirect('/contact')
+})
+
+//******************Groups************************************************************************
+
+app.get('/groups',function(req,res){
+  db.all("SELECT * FROM Groups",function(err,rows){
+  res.render('groups',{tabelGroups :rows})
+  })
+})
+
+app.post('/groups',function(req,res){
+  db.run(`INSERT INTO Groups(name_of_group)VALUES
+  ('${req.body.Name}')`)
+  res.redirect('/groups')
+})
+
+app.get('/groups/editgroups/:id',function(req,res){
+  db.all(`SELECT * FROM Groups WHERE id = ${req.params.id}`,function(err,rows){
+  res.render("editgroups",{tabelGroups : rows})
+  })
+})
+
+app.post('/groups/editgroups/:id',function(req,res){
+  db.run(`UPDATE Groups SET name_of_group = '${req.body.Name}'WHERE id = ${req.params.id}`)
+  res.redirect('/groups')
+})
+
+app.get('/groups/delete/:id',function(req,res){
+  db.run(`DELETE FROM Groups WHERE id = ${req.params.id}`)
+  res.redirect('/groups')
+})
+
+app.listen(3000)
+
+
 /**
 /** EXPRESS CONTACTS-GROUPS
 ---------------------------
