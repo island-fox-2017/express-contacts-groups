@@ -5,12 +5,24 @@
     <title>Groups</title>
   </head>
   <body>
-    <form action="/groups.ejs">
-      Name :<br>
-      <input type="text" name="Group Name" value="Your Group Name">
+    <%= JSON.stringify(groups)%>
+    <table style="width:100%">
+ <tr>
+   <th>Group Name</th>
+ </tr>
+ <% groups.forEach(data => { %>
+ <tr>
+   <td><%= data.groups%></td>
+   <td><a href="/contacts/edit/<%= data.id%>">edit</a></td>
+   <td><a href="/contacts/delete/<%= data.id %>">delete</a></td>
+ </tr>
+ <% })%>
+</table>
+    <form action="/contacts" method="post">
+      Name Group :<br>
+      <input type="text" name="Name" placeholder="Your Name">
       <br>
-
-      <input type="submit" value="Submit">
+      <button type="submit" name="">submit</button>
     </form>
   </body>
 </html>
