@@ -1,3 +1,80 @@
+const express = require('express')
+const app = express()
+
+const sqlite3 = require ('sqlite3').verbose();
+const db = new sqlite3.Database('./db/data1.db');
+const bodyParser = require ('body-parser');
+app.use(bodyParser.urlencoded({ extended : false}))
+app.use(bodyParser.json())
+app.set('view engine','ejs')
+
+
+app.get('/', function(req, res) {
+  res.render('index', {nama:"Halaman Utama"})
+})
+
+ //CONTACT
+app.get('/contact', function(req, res){
+  db.all(`SELECT * FROM Contacts`, function(err, rows){
+    res.render('contact', {all:rows})
+    })
+  })
+
+app.post('/contact',function(req, res){
+  db.run(`INSERT INTO Contacts(name, company, telp_number, email)
+  VALUES ('${req.body.name}', '${req.body.company}', '${req.body.telepon_number}', '${req.body.email}')`)
+  res.redirect('/contact')
+})
+
+app.get('/contact/edit/:id', function(req, res){
+  db.all(`SELECT * FROM Contacts WHERE id = ${req.params.id} `, function(err, rows){
+    res.render('edit', {all:rows})
+    })
+  })
+
+app.post('/contact/edit/:id', function(req, res){
+  db.run(`UPDATE Contacts set name ='${req.body.name}',company = '${req.body.company}',
+  telp_number = '${req.body.telepon_number}', email = '${req.body.email}' WHERE id =${req.params.id}`)
+  res.redirect('/contact')
+})
+
+app.get('/contact/delete/:id', function(req, res){
+  db.run(`DELETE FROM Contacts WHERE id = ${req.params.id}`)
+  res.redirect('/contact')
+})
+
+ //GROUP
+ app.get('/group', function(req, res){
+   db.all(`SELECT * FROM Groups`, function(err, rows){
+     res.render('group', {allG:rows})
+     })
+   })
+
+  app.post('/group',function(req, res){
+    db.run(`INSERT INTO Groups(name_of_group)
+    VALUES ('${req.body.group}')`)
+    res.redirect('/group')
+   })
+
+   app.get('/group/edit/:id', function(req, res){
+     db.all(`SELECT * FROM Groups WHERE id = ${req.params.id} `, function(err, rows){
+       res.render('editG', {allG:rows})
+       })
+     })
+
+  app.post('/group/editG/:id', function(req, res){
+    db.run(`UPDATE Groups SET name_of_group = "${req.body.group}" WHERE id = ${req.params.id}`)
+    res.redirect('/group')
+  })
+
+  app.get('/group/deleteG/:id', function(req, res){
+    db.run(`DELETE FROM Groups WHERE id = ${req.params.id}`)
+    res.redirect('/group')
+  })
+
+app.listen(3008)
+
+
 /**
 /** EXPRESS CONTACTS-GROUPS
 ---------------------------
@@ -27,6 +104,7 @@ POST   | /contacts/edit/:id   | Menerima data form untuk update contact
 GET    | /contacts/delete/:id | Menghapus data contact berdasarkan id
 GET    | /groups              | Menampilkan semua data groups
 POST   | /groups              | Menerima data form untuk input group
+
 GET    | /groups/edit/:id     | Menampilkan data group spesifik untuk diubah
 POST   | /groups/edit/:id     | Menerima data form untuk update group
 GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
