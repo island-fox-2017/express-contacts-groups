@@ -1,36 +1,96 @@
-/**
-/** EXPRESS CONTACTS-GROUPS
----------------------------
-Buatlah sebuah aplikasi sederhana menggunakan Express JS dan SQLITE3 untuk
-menampilkan list Contact&Group, menambah data Contact&Group,
-melakukan edit data dan delete data berdasarkan data yang dipilih
+var express = require('express');
+var app = express();
+var path = require('path');
+var bodyParser = require('body-parser');
 
-- Release 0
-1. Buatlah file dengan nama setup.js yang akan dijalankan pertama kali untuk membuat
-table pada database. Tentukan column mana saja yang akan di set unique.
-2. Berikan validasi di setiap create table sehingga meskipun setup dijalankan berulang
-kali, tidak error
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database('./db/data.db');
 
-Structure table:
-* Contacts: id type integer, name type string, company type string, telp_number type string, email type string
-* Groups: id type integer, name_of_group type string
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 
-- Release 1 - Basic Routing for Contacts dan Groups
-Buatlah sejumlah route berikut dan tampilkan melalui view engine ejs
-----------------------------------------------------------------------
-METHOD | ROUTE                | KETERANGAN
-----------------------------------------------------------------------
-GET    | /contacts            | Menampilkan semua data contacts
-POST   | /contacts            | Menerima data form untuk input contact
-GET    | /contacts/edit/:id   | Menampilkan data contact spesifik untuk diubah
-POST   | /contacts/edit/:id   | Menerima data form untuk update contact
-GET    | /contacts/delete/:id | Menghapus data contact berdasarkan id
-GET    | /groups              | Menampilkan semua data groups
-POST   | /groups              | Menerima data form untuk input group
-GET    | /groups/edit/:id     | Menampilkan data group spesifik untuk diubah
-POST   | /groups/edit/:id     | Menerima data form untuk update group
-GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
+app.get('/', function (req, res) {
+  res.render('index')
+})
 
-- Release 2
-  AKAN DIBERITAHUKAN SETELAH LECTURE SIANG
-**/
+app.get('/create_table', function (req, res) {
+    db.run("CREATE TABLE IF NOT EXISTS Contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name text, company text, telp_number int, email text)");
+    db.run("CREATE TABLE IF NOT EXISTS Groups (id INTEGER PRIMARY KEY AUTOINCREMENT, name_of_group text)");
+    res.send('table Contacts & Groups created');
+})
+
+// app.get('/create_table', function (req, res) {
+//     db.run("CREATE TABLE IF NOT EXISTS Groups (id INTEGER PRIMARY KEY AUTOINCREMENT, name_of_group text)")
+//     res.send('table Groups created');
+// })
+
+//
+// app.get('/contacts/insert', function (req, res) {
+//     db.run("INSERT INTO Contacts (name, company, telp_number, email) VALUES ('Rahmat Hidayat', 'PT Coding Indonesia', 08122, 'hidayat@gmail.com')");
+//     res.redirect('/contacts');
+// })
+
+//Contacts Setting
+app.get('/contacts', function (req, res) {
+  db.all("SELECT * FROM Contacts", function (err, data) {
+    res.render('contacts', {contact_data: data})
+  })
+})
+
+app.post('/contacts', function (req, res) {
+  db.run(`INSERT INTO Contacts (name, company, telp_number, email) VALUES ('${req.body.nama}', '${req.body.company_name}', '${req.body.telp_num}', '${req.body.email}' )`);
+    res.redirect('/contacts');
+})
+
+//Contacts Edit
+app.get('/contacts/edit/:id', function(req, res) {
+  db.all(`SELECT * FROM Contacts WHERE id = ${req.params.id}`, function (err, data){
+    res.render('edit_contact', {contact_data: data})
+  })
+})
+
+app.post('/contacts/edit/:id', function(req, res){
+  db.run(`UPDATE Contacts SET name='${req.body.nama}', company='${req.body.company_name}', telp_number='${req.body.telp_num}', email='${req.body.email}' WHERE id='${req.params.id}'`)
+  res.redirect('/contacts')
+})
+
+//Contacts Delete
+app.get('/contacts/delete/:id', function(req, res) {
+  db.run(`DELETE FROM Contacts WHERE id = ${req.params.id}`, function (err, data) {
+    res.redirect('/contacts')
+  })
+})
+
+//Groups Setting
+app.get('/groups', function (req, res) {
+  db.all("SELECT * FROM Groups", function (err, data) {
+    res.render('groups', {group_data: data})
+  })
+})
+
+app.post('/groups', function (req, res) {
+  db.run(`INSERT INTO Groups (name_of_group) VALUES ('${req.body.nama_group}')`);
+    res.redirect('/groups');
+})
+
+//Groups Edit
+app.get('/groups/edit/:id', function(req, res) {
+  db.all(`SELECT * FROM Groups WHERE id = ${req.params.id}`, function (err, data){
+    res.render('edit_group', {group_data: data})
+  })
+})
+
+app.post('/groups/edit/:id', function(req, res){
+  db.run(`UPDATE Groups SET name_of_group='${req.body.nama_group}' WHERE id='${req.params.id}'`)
+  res.redirect('/groups')
+})
+
+//Groups Delete
+app.get('/groups/delete/:id', function(req, res) {
+  db.run(`DELETE FROM Groups WHERE id = ${req.params.id}`, function (err, data) {
+    res.redirect('/groups')
+  })
+})
+
+app.listen(3000)
