@@ -6,19 +6,28 @@
     <link rel="stylesheet" href="/style.css">
   </head>
   <body>
-    <form class="" action="index.html" method="post">
-      
+    <form class="" action="addgroup" method="post">
+      <a href="/"><input type="button" value="HOME"></a>
+      <input type="submit" value="ADD NEW GROUP">
+      <a href="/contacts"><input type="button" value="CONTACTS"></a>
     </form>
+
     <table style="table">      
       <tr style="tr">
-        <th style="th">Nomor</th>
+        <th style="th">No ID</th>
         <th style="th">Group Name</th>   
-        <th colspan="2" style="th">Action</th>     
+        <th class="action" colspan="2" >ACTION</th>     
       </tr>
+      
+      <% data_group.forEach(group => { %> 
       <tr style="tr">
-        <td style="td">1</th>
-        <td style="td">Project</th>        
+        <td style="td"><%= group.id %></th>
+        <td style="td"><%= group.name_of_group %></th>
+        <td class="editdelete"> <a href="/groups/edit/<%= group.id %>" >EDIT</td>
+        <td class="editdelete"> <a href="/groups/delete/<%= group.id %>" style="color:red" onclick="return confirm('Are you sure want to delete this record?')">DELETE</td>        
       </tr>
+    <% }) %>
+      
     </table>
   </body>
 </html>

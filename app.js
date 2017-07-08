@@ -27,6 +27,10 @@ app.post('/contacts', function(req, res) {
   res.redirect('/contacts')
 })
 
+app.post('/addcontact', function(req, res) {
+  res.render('contact_add')
+})
+
 app.get('/contacts/edit/:id', function(req, res) {
   db.all(`SELECT * FROM contacts WHERE id = ${req.params.id}`, function(err, rows) {
     res.render('contact_edit', {data_contact: rows})
@@ -44,7 +48,34 @@ app.get('/contacts/delete/:id', function(req, res) {
 })
 
 app.get('/groups', function(req,res) {
-  res.render('groups', {})
+  db.all("SELECT * FROM groups", function(err, rows) {
+    res.render('groups', {data_group: rows})
+  })  
+})
+
+app.post('/groups', function(req, res) {
+  db.run(`INSERT INTO groups (name_of_group) VALUES ('${req.body.nama}')`)
+  res.redirect('/groups')
+})
+
+app.post('/addgroup', function(req, res) {
+  res.render('group_add', {})
+})
+
+app.get('/groups/edit/:id', function(req, res) {
+  db.all(`SELECT * FROM groups WHERE id = ${req.params.id}`, function(err, rows) {
+    res.render('group_edit', {data_group: rows})
+  })
+})
+
+app.post('/groups/edit/:id', function(req, res) {
+  db.run(`UPDATE groups SET name_of_group = '${req.body.nama}' WHERE id = '${req.params.id}'`)
+  res.redirect('/groups')
+})
+
+app.get('/groups/delete/:id', function(req, res) {
+  db.run(`DELETE FROM groups WHERE id = '${req.params.id}'`)
+  res.redirect('/groups')
 })
 
 app.listen(3000)
