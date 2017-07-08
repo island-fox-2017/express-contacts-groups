@@ -1,3 +1,5 @@
+Contact App :) 
+
 ---------------------------
 Buatlah sebuah aplikasi sederhana menggunakan Express JS dan SQLITE3 untuk
 menampilkan list Contact&Group, menambah data Contact&Group,
@@ -28,6 +30,3 @@ POST   | /groups              | Menerima data form untuk input group
 GET    | /groups/edit/:id     | Menampilkan data group spesifik untuk diubah
 POST   | /groups/edit/:id     | Menerima data form untuk update group
 GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
-
-- Release 2
-  AKAN DIBERITAHUKAN SETELAH LECTURE SIANG
