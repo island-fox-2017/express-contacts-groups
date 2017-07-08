@@ -51,12 +51,13 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 
-
+//routing Main page
 app.get('/', function (req, res){
   
   res.render('index',{header : 'This is main page'});
 })
 
+//routing contacts
 app.get('/contacts', function(req, res){
   db.all(`select * from Contacts`, function (err, data){
     res.render('contacts',{header : 'This is contacts page', data : data})
@@ -76,21 +77,63 @@ app.post('/contacts', function(req, res){
   res.redirect('/contacts')
 })
 
-app.get('/contact/edit/:id', function(req, res){
-  db.all(`select * from 'Contacts' where 'id'='${req.params.id}' `, function(err, data){
-    res.render('edit_contact', {data : data})
+app.get('/contacts/edit/:id', function(req, res){
+  db.all(`select * from 'Contacts' where id='${req.params.id}' `, function(err, data){
+    if(!err){
+    res.render('edit_contact', {header: 'Edit Contact Page', data : data})
+  }
   });
 })
 
-app.get('/contact/delete/:id', function(req, res){
-  db.run(`delete from 'Contacts' where 'id'='${req.params.id}'`);
+app.post('/contacts/edit/:id', function(req, res){
+  db.run(`update Contacts set name = '${req.body.name}', company = '${req.body.company}', telp_number = '${req.body.telp_number}', email = '${req.body.email}' where id = '${req.params.id}'`)
+  res.redirect('/contacts')
+})
+
+app.get('/contacts/delete/:id', function(req, res){
+  db.run(`delete from 'Contacts' where id='${req.params.id}'`);
   res.redirect(`/contacts`)
 })
 
-// app.post('/contact/edit/:id', function (req, res){
-//   db.run()
-// })
+//routing groups
 
+app.get('/input_data_groups', function(req, res){
+  db.run(`insert into Groups (name_of_group) 
+        values ('hacktiv8')`);
+  res.send('input data group berhasil');
+})
+
+app.get('/groups', function(req, res){
+  db.all(`select * from Groups`, function(err, data){
+    if(!err){
+      res.render('groups', {header : 'Groups Page', data : data})
+    }
+  })
+})
+
+app.post('/groups', function (req, res){
+  db.run(`insert into Groups (name_of_group) values ('${req.body.name_of_group}')`);
+  res.redirect('/groups')
+})
+
+app.get('/groups/edit/:id', function(req, res){
+  db.all(`select * from Groups where id = '${req.params.id}'`, function (err, data){
+    if(!err){
+      res.render('edit_group', {header : 'Edit Group Page', data : data})
+    }
+  })
+})
+
+app.post('/groups/edit/:id', function(req, res){
+  db.run(`update Groups set name_of_group = '${req.body.name_of_group}' where id = '${req.params.id}'`);
+  res.redirect('/groups')
+})
+
+
+app.get('/groups/delete/:id', function(req, res){
+  db.run(`delete from 'Groups' where id = '${req.params.id}'`);
+  res.redirect('/groups')
+})
 
 
 app.listen(3000)
