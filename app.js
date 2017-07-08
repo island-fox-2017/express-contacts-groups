@@ -40,13 +40,14 @@ GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./db/data.db');
 const express = require('express');
-// const path = require('path');
+const path = require('path');
 const bodyParser = require('body-parser');
 
 let app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(express.static(path.join(__dirname, 'public')))
 
 app.set('view engine', 'ejs');
 
