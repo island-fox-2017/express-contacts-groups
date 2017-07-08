@@ -20,7 +20,7 @@ db.all ('SELECT * FROM contacts',function (err, datas) {
 
 app.post ('/contacts', function(req,res){
   db.run(`INSERT INTO contacts(name,company,telp_number,email) VALUES ('${req.body.Name}','${req.body.Company}','${req.body.Telephone}','${req.body.Email}');`)
-  res.redirect(`contacts`)
+  res.redirect(`/contacts`)
 })
 
 app.get ('/contacts/delete/:id', function (req, res) {
@@ -43,11 +43,17 @@ app.post ('/contacts/edit/:id' , function(req, res){
   res.redirect(`/contacts`)
 })
 
-app.get(`/groups`, function(req, res){
-  db.all('SELECT * FROM groups', function (err, datas){
-    res.render('groups', {groups: datas})
+app.get ('/groups', function(req, res){
+db.all ('SELECT * FROM groups',function (err, datas) {
+  res.render('groups', {groups: datas})
   })
 })
+
+app.post ('/groups', function(req,res){
+  db.run(`INSERT INTO groups (name_of_group) VALUES ('${req.body.name_of_group}');`)
+  res.redirect(`/groups`)
+})
+
 
 
 app.listen(3000)

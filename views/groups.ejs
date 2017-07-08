@@ -12,15 +12,15 @@
  </tr>
  <% groups.forEach(data => { %>
  <tr>
-   <td><%= data.groups%></td>
+   <td><%= data.name_of_group%></td>
    <td><a href="/contacts/edit/<%= data.id%>">edit</a></td>
    <td><a href="/contacts/delete/<%= data.id %>">delete</a></td>
  </tr>
  <% })%>
 </table>
-    <form action="/contacts" method="post">
+    <form action="/groups" method="post">
       Name Group :<br>
-      <input type="text" name="Name" placeholder="Your Name">
+      <input type="text" name="name_of_group" placeholder="Groups Name">
       <br>
       <button type="submit" name="">submit</button>
     </form>
