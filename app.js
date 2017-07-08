@@ -34,3 +34,86 @@ GET    | /groups/delete/:id   | Menghapus data group berdasarkan id
 - Release 2
   AKAN DIBERITAHUKAN SETELAH LECTURE SIANG
 **/
+'use strict'
+
+var express = require('express')
+var app = express()
+
+var ejs = require('ejs')
+app.set('view engine', 'ejs')
+
+var bodyParser = require('body-parser')
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: true}))
+
+var sqlite3 = require('sqlite3').verbose()
+var db = new sqlite3.Database('./database/data.db')
+
+// app.get('/', function(req,res) {
+//   res.send('hello world!')
+// })
+
+app.get('/', function(req, res) {
+  res.render('index')
+})
+
+// routing contact
+app.get('/contacts', function(req,res) {
+  db.all(`SELECT * FROM Contacts;`, function(err, data) {
+    res.render('contact', {dataKontak: data})
+  })
+})
+
+app.post('/contacts', function(req,res) {
+  db.run(`INSERT INTO Contacts (name,company,phone_num,email) VALUES ('${req.body.formName}', '${req.body.formCompany}', '${req.body.formPhone}', '${req.body.formEmail}')`)
+  res.redirect('/contacts')
+})
+
+app.get('/contacts/delete/:id',function(req, res) {
+  db.run(`DELETE FROM Contacts WHERE id=${req.params.id}`)
+  res.redirect('/contacts')
+})
+
+app.get('/contacts/edit/:id', function (req,res) {
+  db.all(`SELECT * FROM Contact WHERE id = ${req.params.id};`, function(err, data){
+    res.render('edit_contact', {dataEdit: data})
+  })
+})
+
+app.post('/contacts/edit/:id', function(req,res) {
+  db.run(`UPDATE Contact SET name=${req.body.formName}, company=${req.body.formCompany}, phone_num=${req.body.formPhone}, email=${req.body.formEmail} WHERE id = ${req.params.id}`)
+  res.redirect('/contacts')
+})
+
+// routing group
+app.get('/groups', function(req,res) {
+  db.all(`SELECT * FROM Groups;`, function(err, data) {
+    res.render('group', {dataGrup: data})
+  })
+})
+
+app.post('/groups', function(req,res) {
+  db.run(`INSERT INTO Groups (name_of_group) VALUES ('${req.body.formGroupName}')`)
+  res.redirect('/groups')
+})
+
+app.get('/groups/delete/:id',function(req, res) {
+  db.run(`DELETE FROM Groups WHERE id=${req.params.id}`)
+  res.redirect('/groups')
+})
+
+app.get('/groups/edit/:id', function (req,res) {
+  db.all(`SELECT * FROM Groups WHERE id = ${req.params.id};`, function(err, data){
+    res.render('edit_group', {dataEdit: data})
+  })
+})
+
+app.post('/groups/edit/:id', function(req,res) {
+  db.run(`UPDATE Groups SET name_of_group = ${req.body.formGroupName} WHERE id = ${req.params.id};`)
+  res.redirect('/groups')
+})
+
+
+
+
+app.listen(3000)
