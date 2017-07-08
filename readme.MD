@@ -9,6 +9,7 @@ table pada database. Tentukan column mana saja yang akan di set unique.
 2. Berikan validasi di setiap create table sehingga meskipun setup dijalankan berulang
 kali, tidak error
 
+
 Structure table:
 * Contacts: id type integer, name type string, company type string, telp_number type string, email type string
 * Groups: id type integer, name_of_group type string
