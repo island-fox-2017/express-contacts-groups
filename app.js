@@ -75,13 +75,13 @@ app.get('/contacts/delete/:id',function(req, res) {
 })
 
 app.get('/contacts/edit/:id', function (req,res) {
-  db.all(`SELECT * FROM Contact WHERE id = ${req.params.id};`, function(err, data){
+  db.all(`SELECT * FROM Contacts WHERE id = '${req.params.id}';`, function(err, data){
     res.render('edit_contact', {dataEdit: data})
   })
 })
 
 app.post('/contacts/edit/:id', function(req,res) {
-  db.run(`UPDATE Contact SET name=${req.body.formName}, company=${req.body.formCompany}, phone_num=${req.body.formPhone}, email=${req.body.formEmail} WHERE id = ${req.params.id}`)
+  db.run(`UPDATE Contacts SET name='${req.body.formName}', company='${req.body.formCompany}', phone_num='${req.body.formPhone}', email='${req.body.formEmail}' WHERE id = ${req.params.id}`)
   res.redirect('/contacts')
 })
 
@@ -93,23 +93,23 @@ app.get('/groups', function(req,res) {
 })
 
 app.post('/groups', function(req,res) {
-  db.run(`INSERT INTO Groups (name_of_group) VALUES ('${req.body.formGroupName}')`)
+  db.run(`INSERT INTO Groups (name_of_group) VALUES ('${req.body.formGroupName}');`)
   res.redirect('/groups')
 })
 
 app.get('/groups/delete/:id',function(req, res) {
-  db.run(`DELETE FROM Groups WHERE id=${req.params.id}`)
+  db.run(`DELETE FROM Groups WHERE id='${req.params.id}';`)
   res.redirect('/groups')
 })
 
 app.get('/groups/edit/:id', function (req,res) {
-  db.all(`SELECT * FROM Groups WHERE id = ${req.params.id};`, function(err, data){
+  db.all(`SELECT * FROM Groups WHERE id = '${req.params.id}';`, function(err, data){
     res.render('edit_group', {dataEdit: data})
   })
 })
 
 app.post('/groups/edit/:id', function(req,res) {
-  db.run(`UPDATE Groups SET name_of_group = ${req.body.formGroupName} WHERE id = ${req.params.id};`)
+  db.run(`UPDATE Groups SET name_of_group = '${req.body.formGroupName}' WHERE id = '${req.params.id}';`)
   res.redirect('/groups')
 })
 
