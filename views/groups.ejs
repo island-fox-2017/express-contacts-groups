@@ -5,7 +5,6 @@
     <title>Groups</title>
   </head>
   <body>
-    <%= JSON.stringify(groups)%>
     <table style="width:100%">
  <tr>
    <th>Group Name</th>
@@ -13,8 +12,8 @@
  <% groups.forEach(data => { %>
  <tr>
    <td><%= data.name_of_group%></td>
-   <td><a href="/contacts/edit/<%= data.id%>">edit</a></td>
-   <td><a href="/contacts/delete/<%= data.id %>">delete</a></td>
+   <td><a href="/groups/editgroups/<%= data.id%>">edit</a></td>
+   <td><a href="/groups/delete/<%= data.id %>">delete</a></td>
  </tr>
  <% })%>
 </table>
