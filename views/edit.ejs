@@ -6,7 +6,8 @@
   </head>
   <body>
     <h1>Halaman Edit</h1>
-    <form action="/contacts/edit/<%=data[0].id%>" method="POST">
+    <%data.forEach(d => { %>
+    <form action="/contacts/edit/<%=data[0].id%>" method="post">
       <br>Id:</br>
       <input type="text" name="nama" value="<%= data[0].id%>">
       <br>Nama:</Br>
@@ -17,6 +18,7 @@
       <input type="text" name="num_telp" value="<%= data[0].num_telp%>">
       <br>Email</Br>
       <input type="text" name="Email" value="<%= data[0].email%>">
+      <% }) %>
     </form>
   </body>
 </html>
