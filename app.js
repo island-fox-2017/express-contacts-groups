@@ -63,7 +63,7 @@ app.get('/contacts/edit/:id', function(req, res){
   })
 })
 
-app.post('/contacts/edit/:id', function(res,req){
+app.post('/contacts/edit/:id', function(req,res){
 db.run(`UPDATE Contacts SET
 name = '${req.body.name}',
 company = '${req.body.company}',
@@ -107,10 +107,11 @@ app.get('/groups/edit/:id', function(req, res){
   })
 })
 
-app.post('/groups/edit/:id', function(res,req){
-db.run(`UPDATE Groups SET
-name_of_group = '${req.body.name_of_group}' WHERE id = '${req.params.id}';`)
-res.redirect('/groups');
+app.post('/groups/edit/:id', function(req,res){
+  console.log("-------",req.body);
+  db.run(`UPDATE Groups SET
+    name_of_group = '${req.body.name_of_group}' WHERE id = '${req.params.id}';`)
+      res.redirect('/groups');
 })
 
 // GET    | /groups/delete/:id | Menghapus data group berdasarkan id
