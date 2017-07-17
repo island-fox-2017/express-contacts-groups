@@ -46,21 +46,24 @@ app.post('/contacts', function(req, res){
 // app.get('/contacts/edit/:id', function(req, res){
 //   console.log(req.query.id);
 // });
-app.get('/contacts/edit/:id', function (req, res, next){
-  db.all(`SELECT id FROM Contacts`, function(err, rows){
+app.get('/contacts/edit/:id', function (req, res){
+  db.all(`SELECT * FROM Contacts`, function(err, rows){
   //res.render('edit', { edit_data : rows})
-  res.render('edit', {edit_data: req.params});
-  next();
+  console.log(rows);
+  res.render('edit', {edit_data: rows});
   });
 });
 
 app.post('/contacts/edit/:id', function(req, res){
-  db.run(`UPDATE Contacts SET name ='${req.body.ownerName}', company ='${req.body.company}', telp_number ='${req.body.telpComp}', email ='${req.body.emailCompany}' WHERE id= '${req.params}' `)
+  console.log("masuk", req.body);
+  console.log("id", req.params);
+  db.run(`UPDATE Contacts SET name ='${req.body.ownerName}', company ='${req.body.company}',
+  telp_number ='${req.body.telpComp}', email ='${req.body.emailCompany}' WHERE id= ${req.params.id} `)
   res.redirect('/contacts');
 });
 
 app.get('/contacts/delete/:id', function (req, res) {
-  db.all(`DELETE FROM Contacts WHERE id = '${req.params}' `, function(err, rows){
+  db.all(`DELETE FROM Contacts WHERE id = '${req.params.id}' `, function(err, rows){
     //res.render('delete')
     res.redirect('/contacts');
   });

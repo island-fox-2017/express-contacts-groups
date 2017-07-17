@@ -47,7 +47,7 @@
               <td> <%= contacts.company %></td>
               <td> <%= contacts.telp_number %></td>
               <td> <%= contacts.email %></td>
-              <td> <a href="/contacts/edit/:id">Edit</a> <a href="/contacts/delete/:id">Delete</a></td>
+              <td> <a href="/contacts/edit/<%= contacts.id%>">Edit</a> <a href="/contacts/delete/<%= contacts.id%>">Delete</a></td>
             </tr>
           <% }) %>
         </tbody>

@@ -8,16 +8,16 @@
     <h2>Edit Contact</h2>
     <div class="form_data">
         <h3>Edit Data</h3>
-        <form class="" action="/contacts/edit/:id" method="post">
+        <form action="/contacts/edit/<%= edit_data[0].id%>" method="post">
           <p>Input Owner Name :</p>
-          <input type="text" name="ownerName" value="" >
+          <input type="text" name="ownerName" value="<%= edit_data[0].name%>" >
           <p>Input Company Name :</p>
-          <input type="text" name="company" value="">
+          <input type="text" name="company" value="<%= edit_data[0].company%>">
           <p>Input Own :</p>
-          <input type="tel" name="telpComp" value="">
+          <input type="tel" name="telpComp" value="<%= edit_data[0].telp_number%>">
           <p>Input Company Email :</p>
-          <input type="email" name="emailCompany" value=""><br>
-          <button type="submit" name="button">Submit</button>
+          <input type="email" name="emailCompany" value="<%= edit_data[0].email%>"><br>
+          <button type="submit" name="button" >Submit</button>
         </form>
     </div>
   </body>
