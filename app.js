@@ -54,6 +54,29 @@ app.post ('/groups', function(req,res){
   res.redirect(`/groups`)
 })
 
+app.get ('/groups/delete/:id', function (req, res) {
+  db.run(`DELETE FROM groups WHERE id = ${req.params.id}`)
+  res.redirect(`/groups`)
+})
+
+app.get ('/groups/editgroups/:id', function (req, res){
+  console.log(`SELECT * FROM groups WHERE id = ${req.params.id}`);
+  db.all(`SELECT * FROM groups WHERE id = ${req.params.id}`, function (err, rows){
+    if (!err) {
+      console.log(rows);
+      res.render(`editgroups`, {input : rows})
+    }
+  })
+})
+
+app.post ('/groups/editgroups/:id' , function(req, res){
+  db.run(`UPDATE groups SET name_of_group = '${req.body.name_of_group}' WHERE id = '${req.params.id}'`)
+  res.redirect(`/groups`)
+})
+
+app.get ('/profile', function (res, req){
+  res.send ('ini profile')
+})
 
 
 app.listen(3000)
